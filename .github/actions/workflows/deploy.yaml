@@ -1,0 +1,46 @@
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+
+name: Terraform apply
+
+# Controls when the action will run. 
+on:
+  workflow_dispatch: {}
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches:
+      - main
+    paths:
+      - infrastructure/dev/*.tf
+
+# https://docs.github.com/en/actions/reference/authentication-in-a-workflow#permissions-for-the-github_token
+permissions:
+  contents: read
+
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      # Unable to combine path and branch in the "on" section see ""
+      # https://stackoverflow.com/questions/64621707/is-there-a-way-to-combine-push-criteria-in-github-actions-using-the-logical-and/65060840#65060840
+
+      - name: HashiCorp - Setup Terraform
+        # You may pin to the exact commit or the version.
+        uses: "hashicorp/setup-terraform@3d8debd658c92063839bc97da5c2427100420dec" # v1.3.2
+        with:
+          # The version of Terraform CLI to install. Instead of full version string you can also specify constraint string starting with "<" (for example `<1.13.0`) to install the latest version satisfying the constraint. A value of `latest` will install the latest version of Terraform CLI. Defaults to `latest`.
+          terraform_version: 1.0.9 # optional, default is latest
+
+      - name: Run Terraform apply on base domain
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          cd ./infrastructure/dev && \
+          terraform init && \
+          terraform apply -auto-approve
