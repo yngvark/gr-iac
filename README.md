@@ -33,6 +33,14 @@ tf plan
 tf apply
 ```
 
+## Add GitHub secrets for AWS credentials
+
+Go to repository settings -> secrets. Create secrets for
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+
+This is because GitHub Actions needs these.
+
 ## Verify setup
 
 You can verify in two ways, locally, and in Github Actions.
@@ -49,7 +57,7 @@ This should not return an error, meaning the Terraform setup works as expected.
 
 ### Remote state
 
-
+Go to this repository's github action in GitHub, and trigger a run on the Terraform github action.
 
 # Un-managed stuff that needs to be cleaned up
 
